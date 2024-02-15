@@ -1,0 +1,78 @@
+import React from 'react';
+import {createSharedElementStackNavigator} from 'react-navigation-shared-element';
+import {StyleSheet} from 'react-native';
+import Animated from 'react-native-reanimated';
+import HomeScreen from '../../screens/Home';
+import {COLORS} from '../../styles/color';
+import NotificationsScreen from '../../screens/Notifications';
+import RecipeScreen from '../../screens/Recipe';
+import AppMenuButton from '../../components/AppMenuButton/AppMenuButton';
+import AppNotificationButton from '../../components/AppNotificationButton/AppNotificationButton';
+
+const Stack = createSharedElementStackNavigator({
+  name: 'HomeStackNavigator',
+  debug: true,
+});
+// const Stack = createStackNavigator();
+
+const navigationOptions = {
+  gestureEnabled: false,
+  headerStyle: {
+    backgroundColor: COLORS.white,
+    shadowColor: 'transparent',
+    shadowRadius: 0,
+    shadowOffset: {
+      height: 0,
+    },
+    elevation: 0,
+  },
+  headerBackTitleVisible: false,
+  headerTintColor: COLORS.black,
+  headerTitle: null,
+  headerLeft: () => <AppMenuButton />,
+  headerRight: () => <AppNotificationButton />,
+};
+
+const HomeStackNavigator = ({style}) => {
+  return (
+    <Animated.View style={StyleSheet.flatten([styles.stack, style])}>
+      <Stack.Navigator
+        initialRouteName="HomeScreen"
+        screenOptions={navigationOptions}>
+        <Stack.Screen name="HomeScreen" component={HomeScreen} />
+        <Stack.Screen name="Notification" component={NotificationsScreen} />
+        <Stack.Screen
+          name="Recipe"
+          component={RecipeScreen}
+          sharedElements={(route, otherRoute, showing) => {
+            const {recipe} = route.params;
+            return [
+              {
+                id: `item.${recipe.idMeal}.photo`,
+                animation: 'fade',
+              },
+            ];
+          }}
+        />
+      </Stack.Navigator>
+    </Animated.View>
+  );
+};
+
+export default HomeStackNavigator;
+
+const styles = StyleSheet.create({
+  stack: {
+    flex: 1,
+    shadowColor: '#FFF',
+    shadowOffset: {
+      width: 0,
+      height: 8,
+    },
+    shadowOpacity: 0.44,
+    shadowRadius: 10.32,
+    elevation: 5,
+    // overflow: 'scroll',
+    // borderWidth: 1,
+  },
+});
